@@ -17,7 +17,7 @@ main:
 	sw $t5, Z		#Store the answer in Z (declared at the bottom)  
 
 	# Exit the program by means of a syscall.
-	# There are many syscalls - pick the desired one
+	# There are many syscalls pick the desired one
 	# by placing its code in $v0. The code for exit is "10"
 	li $v0, 10 # Sets $v0 to "10" to select exit syscall
 	syscall # Exit
