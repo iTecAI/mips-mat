@@ -9,13 +9,20 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:mips"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
+    "languages": [
       {
-        "command": "mipsmat.helloWorld",
-        "title": "Hello World"
+        "id": "MIPS Assembly",
+        "aliases": [
+          "MIPS"
+        ],
+        "extensions": [
+          "asm"
+        ]
       }
     ]
   },
