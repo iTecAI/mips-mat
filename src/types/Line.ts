@@ -5,7 +5,7 @@ export type Line = {
     line: TextLine;
     comment?: {
         text: string;
-        block: null | "top" | "bottom";
+        block: null | "top" | "bottom" | "single" | "middle";
     };
     label?: string;
     mnemonic?: {

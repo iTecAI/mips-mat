@@ -39,7 +39,7 @@
                         "type": "integer",
                         "title": "Line Length",
                         "description": "Maximum character length of each line.",
-                        "default": 8
+                        "default": 80
                     },
                     "mipsmat.labelColumn": {
                         "type": "integer",

@@ -7,11 +7,15 @@ export function createLine(text: string, line: number): TextEdit {
 }
 
 export function columnize(
-    columns: (string | null | undefined)[],
+    columns: { [key: number]: string },
     config: Config
 ): string {
     const result: string[] = [];
-    for (let i = 0; i < columns.length; i++) {
+    for (
+        let i = 0;
+        i < Math.ceil(config.lineLength / config.columnWidth);
+        i++
+    ) {
         result.push((columns[i] ?? "").padEnd(config.columnWidth));
     }
     return result.join("").trimEnd();

@@ -90,7 +90,7 @@ export function tokenize(
             if (prStrip.startsWith("#") && neStrip.startsWith("#")) {
                 lineData.comment = {
                     text: token.comment,
-                    block: null,
+                    block: "middle",
                 };
             } else if (prStrip.startsWith("#")) {
                 lineData.comment = {
@@ -105,7 +105,7 @@ export function tokenize(
             } else {
                 lineData.comment = {
                     text: token.comment,
-                    block: null,
+                    block: "single",
                 };
             }
         }

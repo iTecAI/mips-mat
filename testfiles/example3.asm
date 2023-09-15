@@ -24,8 +24,7 @@ PRINT_INT = 1
 #
 .data
 .align 2 # word data must be on word boundaries
-array:
-.space 4*MAX_SIZE # Reserve space for array to hold data
+array: .space 4*MAX_SIZE # Reserve space for array to hold data
 # the array is up to MAX_SIZE words (4byte
 # each). Note the array isn’t initialized
 size:
