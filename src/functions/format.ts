@@ -1,13 +1,15 @@
-import { TextDocument, TextEdit } from "vscode";
+import { Range, TextDocument, TextEdit } from "vscode";
 import { tokenize } from "./token";
 import { getConfig } from "../types/Config";
-import { columnize, smartWrap } from "./util";
+import { columnize, createLine, smartWrap } from "./util";
 
 export function formatDocument(document: TextDocument): TextEdit[] {
     try {
         const tokenized = [];
+        const lineLengths = [];
         const config = getConfig();
         for (let i = 0; i < document.lineCount; i++) {
+            lineLengths.push(document.lineAt(i).text.length);
             tokenized.push(
                 tokenize(
                     document.lineAt(i),
@@ -45,7 +47,9 @@ export function formatDocument(document: TextDocument): TextEdit[] {
                     );
                 }
 
-                toAdd.push(columnize(columns, config));
+                if (Object.keys(columns).length > 0) {
+                    toAdd.push(columnize(columns, config));
+                }
             }
 
             expandedLines.push({
@@ -70,12 +74,10 @@ export function formatDocument(document: TextDocument): TextEdit[] {
                 .map((l) => (l.lines.at(-1) ?? "").length + config.commentSpace)
         );
 
-        console.log(minCommentAlignment);
-
         const assembledLines: string[] = [];
 
         for (const line of expandedLines) {
-            if (!line.lines.at(-1)) {
+            if (line.lines.length === 0) {
                 assembledLines.push(line.comment ?? "");
                 continue;
             }
@@ -106,10 +108,14 @@ export function formatDocument(document: TextDocument): TextEdit[] {
                 assembledLines.push(...line.lines);
             }
         }
-
-        console.log(assembledLines.join("\n"));
-
-        return [];
+        return [
+            ...lineLengths.map((len, i) =>
+                TextEdit.delete(new Range(i, 0, i, len))
+            ),
+            ...assembledLines.map((line, i) =>
+                createLine(line + (i >= document.lineCount - 1 ? "\n" : ""), i)
+            ),
+        ];
     } catch (e) {
         console.log(e);
         return [];
