@@ -1,49 +1,92 @@
 {
-  "name": "mipsmat",
-  "displayName": "MipsMat",
-  "description": "MIPS Assembly Formatter",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.82.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onLanguage:mips"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "languages": [
-      {
-        "id": "MIPS Assembly",
-        "aliases": [
-          "MIPS"
+    "name": "mipsmat",
+    "displayName": "MipsMat",
+    "description": "MIPS Assembly Formatter",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.82.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:mips"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "MIPS Assembly",
+                "aliases": [
+                    "MIPS"
+                ],
+                "extensions": [
+                    "asm"
+                ]
+            }
         ],
-        "extensions": [
-          "asm"
+        "configuration": [
+            {
+                "title": "MipsMat",
+                "properties": {
+                    "mipsmat.columnWidth": {
+                        "type": "integer",
+                        "title": "Column Width",
+                        "description": "The width, in spaces, of a single column.",
+                        "default": 8
+                    },
+                    "mipsmat.lineLength": {
+                        "type": "integer",
+                        "title": "Line Length",
+                        "description": "Maximum character length of each line.",
+                        "default": 8
+                    },
+                    "mipsmat.labelColumn": {
+                        "type": "integer",
+                        "title": "Label Column",
+                        "description": "Column to align Labels in (0-indexed)",
+                        "default": 0
+                    },
+                    "mipsmat.instructionColumn": {
+                        "type": "integer",
+                        "title": "Instruction Column",
+                        "description": "Column to align Instructions & Directives in (0-indexed)",
+                        "default": 1
+                    },
+                    "mipsmat.paramColumn": {
+                        "type": "integer",
+                        "title": "Parameter Column",
+                        "description": "Column to align Parameters in (0-indexed)",
+                        "default": 2
+                    },
+                    "mipsmat.commentSpace": {
+                        "type": "integer",
+                        "title": "Comment Space",
+                        "description": "Minimum number of spaces between the last piece of code in a line and the line's comment",
+                        "default": 8
+                    }
+                }
+            }
         ]
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "yarn run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile && yarn run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.82.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "16.x",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
-    "eslint": "^8.47.0",
-    "glob": "^10.3.3",
-    "mocha": "^10.2.0",
-    "typescript": "^5.1.6",
-    "@vscode/test-electron": "^2.3.4"
-  }
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "yarn run compile && yarn run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.82.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "16.x",
+        "@typescript-eslint/eslint-plugin": "^6.4.1",
+        "@typescript-eslint/parser": "^6.4.1",
+        "eslint": "^8.47.0",
+        "glob": "^10.3.3",
+        "mocha": "^10.2.0",
+        "typescript": "^5.1.6",
+        "@vscode/test-electron": "^2.3.4"
+    }
 }

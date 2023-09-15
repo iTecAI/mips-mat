@@ -5,9 +5,17 @@ function rawToken(text: string): LineTokens {
     const tokens: LineTokens = {};
     let tracking = "";
     let commenting = false;
+    let quoting = false;
 
     for (const char of text) {
         if (commenting) {
+            tracking += char;
+            continue;
+        }
+        if (char === '"') {
+            quoting = !quoting;
+        }
+        if (quoting) {
             tracking += char;
             continue;
         }
