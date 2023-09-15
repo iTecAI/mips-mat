@@ -14,3 +14,10 @@ export type Line = {
   };
   params?: string[];
 };
+
+export type LineTokens = {
+    comment?: string;
+    label?: string;
+    mnemonic?: string;
+    params?: string;
+};
