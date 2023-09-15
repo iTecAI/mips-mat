@@ -42,14 +42,16 @@ function rawToken(text: string): LineTokens {
         tracking += char;
     }
 
-    if (commenting) {
-        tokens.comment = tracking.trim();
-    } else if (!tokens.label && tracking.trim().endsWith(":")) {
-        tokens.label = tracking.trim();
-    } else if (!tokens.mnemonic) {
-        tokens.mnemonic = tracking.trim();
-    } else {
-        tokens.params = tokens.params ?? "" + tracking;
+    if (tracking.trim().length > 0) {
+        if (commenting) {
+            tokens.comment = tracking.trim();
+        } else if (!tokens.label && tracking.trim().endsWith(":")) {
+            tokens.label = tracking.trim();
+        } else if (!tokens.mnemonic) {
+            tokens.mnemonic = tracking.trim();
+        } else {
+            tokens.params = tokens.params ?? "" + tracking;
+        }
     }
 
     return tokens;
@@ -69,41 +71,66 @@ export function tokenize(
     };
 
     const token = rawToken(stripped);
-    console.log(token);
 
-    if (stripped.startsWith("#")) {
-        if (prStrip.startsWith("#") && neStrip.startsWith("#")) {
-            lineData.comment = {
-                text: stripped,
-                block: "middle",
-            };
-        } else if (prStrip.startsWith("#")) {
-            lineData.comment = {
-                text: stripped,
-                block: "bottom",
-            };
-        } else if (neStrip.startsWith("#")) {
-            lineData.comment = {
-                text: stripped,
-                block: "top",
-            };
-        } else {
-            lineData.comment = {
-                text: stripped,
-                block: null,
-            };
-        }
-    } else {
-        if (token.comment) {
+    if (token.comment) {
+        if (token.label || token.mnemonic || token.params) {
             lineData.comment = {
                 text: token.comment,
                 block: null,
             };
+        } else {
+            if (prStrip.startsWith("#") && neStrip.startsWith("#")) {
+                lineData.comment = {
+                    text: token.comment,
+                    block: null,
+                };
+            } else if (prStrip.startsWith("#")) {
+                lineData.comment = {
+                    text: token.comment,
+                    block: "bottom",
+                };
+            } else if (neStrip.startsWith("#")) {
+                lineData.comment = {
+                    text: token.comment,
+                    block: "top",
+                };
+            } else {
+                lineData.comment = {
+                    text: token.comment,
+                    block: null,
+                };
+            }
         }
+    }
 
-        if (token.label) {
-            lineData.label = token.label;
-        }
+    if (
+        token.mnemonic &&
+        (token.mnemonic + (token.params ?? "")).includes("=")
+    ) {
+        const normalized = (token.mnemonic + (token.params ?? ""))
+            .split("=", 2)
+            .map((s) => s.trim())
+            .join(" = ");
+        lineData.constant = {
+            text: normalized,
+            name: normalized.split(" = ")[0],
+            value: normalized.split(" = ")[1],
+        };
+    }
+
+    if (token.label) {
+        lineData.label = token.label;
+    }
+
+    if (token.mnemonic && !lineData.constant) {
+        lineData.mnemonic = {
+            text: token.mnemonic,
+            type: token.mnemonic.startsWith(".") ? "directive" : "instruction",
+        };
+    }
+
+    if (token.params && !lineData.constant) {
+        lineData.params = token.params.split(",").map((s) => s.trim());
     }
 
     return lineData;
