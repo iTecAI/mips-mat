@@ -67,7 +67,7 @@ jr $ra # return from main and exit program
 #
 #---+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
 parray:
-la $a0,array # a0 is the location of the array
+        la      $a0,array       # a0 is the location of the array
 la $t0,size
 lw $a1, 0($t0) # a1 is the number of elements entered
 done:

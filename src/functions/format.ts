@@ -1,40 +1,28 @@
-import { TextDocument, TextEdit, FormattingOptions } from "vscode";
+import { TextDocument, TextEdit } from "vscode";
 import { tokenize } from "./token";
 import { getConfig } from "../types/Config";
-import { columnize } from "./util";
+import { columnize, smartWrap } from "./util";
 
-export function formatDocument(
-    document: TextDocument,
-    options: FormattingOptions
-): TextEdit[] {
-    const tokenized = [];
-    const config = getConfig();
-    for (let i = 0; i < document.lineCount; i++) {
-        tokenized.push(
-            tokenize(
-                document.lineAt(i),
-                i > 0 ? document.lineAt(i - 1) : null,
-                i < document.lineCount - 1 ? document.lineAt(i + 1) : null
-            )
-        );
-    }
-
-    const rawLines: string[] = [];
-
-    for (const line of tokenized) {
-        const toAdd: string[] = [];
-        if (line.text.trim().length === 0) {
-            toAdd.push("");
+export function formatDocument(document: TextDocument): TextEdit[] {
+    try {
+        const tokenized = [];
+        const config = getConfig();
+        for (let i = 0; i < document.lineCount; i++) {
+            tokenized.push(
+                tokenize(
+                    document.lineAt(i),
+                    i > 0 ? document.lineAt(i - 1) : null,
+                    i < document.lineCount - 1 ? document.lineAt(i + 1) : null
+                )
+            );
         }
-        if (line.comment) {
-            if (line.comment.block) {
-                toAdd.push(line.comment.text);
-            }
-        } else {
-            if (line.label) {
-                toAdd.push(
-                    columnize({ [config.labelColumn]: line.label }, config)
-                );
+
+        const expandedLines: { lines: string[]; comment: string | null }[] = [];
+
+        for (const line of tokenized) {
+            const toAdd: string[] = [];
+            if (line.text.trim().length === 0) {
+                toAdd.push("");
             }
 
             const columns: { [key: number]: string } = {};
@@ -48,13 +36,82 @@ export function formatDocument(
                 columns[config.paramColumn] = line.params.join(",");
             }
 
-            toAdd.push(columnize(columns, config));
+            if (line.comment?.block) {
+                toAdd.push(line.comment.text);
+            } else {
+                if (line.label) {
+                    toAdd.push(
+                        columnize({ [config.labelColumn]: line.label }, config)
+                    );
+                }
+
+                toAdd.push(columnize(columns, config));
+            }
+
+            expandedLines.push({
+                lines: toAdd,
+                comment:
+                    line.comment && !line.comment.block
+                        ? line.comment.text
+                        : null,
+            });
         }
 
-        rawLines.push(...toAdd);
+        const minCommentAlignment = Math.max(
+            ...expandedLines
+                .filter(
+                    (l) =>
+                        l.comment &&
+                        (l.lines.at(-1) ?? "").length +
+                            config.commentSpace +
+                            (l.comment ?? "").length <
+                            config.lineLength
+                )
+                .map((l) => (l.lines.at(-1) ?? "").length + config.commentSpace)
+        );
+
+        console.log(minCommentAlignment);
+
+        const assembledLines: string[] = [];
+
+        for (const line of expandedLines) {
+            if (!line.lines.at(-1)) {
+                assembledLines.push(line.comment ?? "");
+                continue;
+            }
+            if (line.comment) {
+                const spacing =
+                    minCommentAlignment - (line.lines.at(-1) ?? "").length;
+                if (
+                    minCommentAlignment + line.comment.length >
+                    config.lineLength
+                ) {
+                    assembledLines.push(...line.lines.slice(0, -1));
+                    assembledLines.push(
+                        ...smartWrap(
+                            line.comment.trim().slice(1).trim(),
+                            config.lineLength - 3
+                        ).map((c) => "# " + c)
+                    );
+                    assembledLines.push(line.lines.at(-1) ?? "");
+                } else {
+                    assembledLines.push(
+                        ...line.lines.slice(0, -1),
+                        (line.lines.at(-1) ?? "") +
+                            "".padEnd(spacing) +
+                            line.comment
+                    );
+                }
+            } else {
+                assembledLines.push(...line.lines);
+            }
+        }
+
+        console.log(assembledLines.join("\n"));
+
+        return [];
+    } catch (e) {
+        console.log(e);
+        return [];
     }
-
-    console.log(rawLines.join("\n"));
-
-    return [];
 }

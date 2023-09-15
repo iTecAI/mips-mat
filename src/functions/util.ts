@@ -20,3 +20,23 @@ export function columnize(
     }
     return result.join("").trimEnd();
 }
+
+export function smartWrap(text: string, maxLength: number): string[] {
+    if (text.length <= maxLength) {
+        return [text];
+    }
+
+    const results: string[] = [];
+    let current = "";
+
+    for (const part of text.split(" ")) {
+        if ((current + " " + part).length > maxLength) {
+            results.push(current);
+            current = part;
+        } else {
+            current += " " + part;
+        }
+    }
+    results.push(current);
+    return results;
+}
