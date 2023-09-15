@@ -1,8 +1,8 @@
-import { Position, TextEdit } from "vscode";
+import { Range, TextEdit } from "vscode";
 import { Config } from "../types/Config";
 
 export function createLine(text: string, line: number): TextEdit {
-    return TextEdit.insert(new Position(line, 0), text);
+    return TextEdit.replace(new Range(line, 0, line, 512), text);
 }
 
 export function columnize(

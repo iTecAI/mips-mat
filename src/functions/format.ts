@@ -6,10 +6,8 @@ import { columnize, createLine, smartWrap } from "./util";
 export function formatDocument(document: TextDocument): TextEdit[] {
     try {
         const tokenized = [];
-        const lineLengths = [];
         const config = getConfig();
         for (let i = 0; i < document.lineCount; i++) {
-            lineLengths.push(document.lineAt(i).text.length);
             tokenized.push(
                 tokenize(
                     document.lineAt(i),
@@ -109,9 +107,6 @@ export function formatDocument(document: TextDocument): TextEdit[] {
             }
         }
         return [
-            ...lineLengths.map((len, i) =>
-                TextEdit.delete(new Range(i, 0, i, len))
-            ),
             ...assembledLines.map((line, i) =>
                 createLine(line + (i >= document.lineCount - 1 ? "\n" : ""), i)
             ),
