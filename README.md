@@ -15,3 +15,7 @@ Users appreciate release notes as you update your extension.
 ### 1.0.0
 
 Initial release with basic functionality.
+
+### 1.0.1
+
+- Bugfix: Quoted equals are not counted as constants

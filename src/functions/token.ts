@@ -113,7 +113,8 @@ export function tokenize(
 
     if (
         token.mnemonic &&
-        (token.mnemonic + (token.params ?? "")).includes("=")
+        (token.mnemonic + (token.params ?? "")).includes("=") &&
+        !/\".*=.*\"/g.test(token.mnemonic + (token.params ?? ""))
     ) {
         const normalized = (token.mnemonic + (token.params ?? ""))
             .split("=", 2)

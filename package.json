@@ -2,7 +2,7 @@
     "name": "mipsmat",
     "displayName": "MipsMat",
     "description": "MIPS Assembly Formatter",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "repository": {
         "type": "GitHub",
         "url": "https://github.com/iTecAI/mips-mat"
